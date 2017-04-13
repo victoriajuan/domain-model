@@ -28,11 +28,48 @@ public struct Money {
   public var currency : String
   
   public func convert(_ to: String) -> Money {
+    if currency == "USD"{
+        if to == "GBP" {
+            return Money(amount: self.amount * 5 / 10, currency: "GBP");
+        }else if to == "EUR" {
+            return Money(amount: self.amount * 15 / 10, currency: "EUR");
+        }else {
+            return Money(amount: self.amount * 125 / 100, currency: "CAN");
+        }
+    }else if currency == "GBP"{
+        if to == "USD" {
+            return Money(amount: self.amount * 2, currency: "USD");
+        }else if to == "EUR" {
+            return Money(amount: self.amount * 3, currency: "EUR");
+        }else {
+            return Money(amount: self.amount * 25 / 10, currency: "CAN");
+        }
+    }else if currency == "EUR"{
+        if to == "USD" {
+            return Money(amount: self.amount / 3 * 2, currency: "USD");
+        }else if to == "GBP" {
+            return Money(amount: self.amount / 3, currency: "GBP");
+        }else {
+            return Money(amount: self.amount * 8 / 15, currency: "CAN");
+        }
+    }else if currency == "CAN"{
+        if to == "USD" {
+            return Money(amount: self.amount / 5 * 4, currency: "USD");
+        }else if to == "GBP" {
+            return Money(amount: self.amount / 5 * 2, currency: "GBP");
+        }else {
+            return Money(amount: self.amount / 5 * 6, currency: "EUR");
+        }
+    }
+    return Money(amount: 0, currency: "")
   }
   
   public func add(_ to: Money) -> Money {
+    return Money(amount: self.amount + to.convert(self.currency).amount, currency: to.currency)
   }
+    
   public func subtract(_ from: Money) -> Money {
+    return Money(amount: self.amount - from.convert(self.currency).amount, currency: from.currency)
   }
 }
 
@@ -49,12 +86,26 @@ open class Job {
   }
   
   public init(title : String, type : JobType) {
+    self.title = title
+    self.type = type
   }
   
   open func calculateIncome(_ hours: Int) -> Int {
+    switch self.type {
+    case JobType.Hourly(let income):
+        return Int(income * Double(hours))
+    case JobType.Salary(let income):
+        return income
+    }
   }
   
   open func raise(_ amt : Double) {
+    switch self.type {
+    case JobType.Hourly(let originHourly):
+        self.type = JobType.Hourly(amt + originHourly)
+    case JobType.Salary(let originYearly):
+        self.type = JobType.Salary(Int(amt) + originYearly)
+    }
   }
 }
 
